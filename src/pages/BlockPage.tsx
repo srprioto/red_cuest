@@ -1,5 +1,5 @@
 import { ChevronRight } from 'lucide-react'
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import FieldGroup from '../components/fields/FieldGroup'
 import RepeatSection from '../components/fields/RepeatSection'
@@ -33,6 +33,13 @@ function BlockForm({ block, index }: { block: Block; index: number }) {
 	const [errors, setErrors] = useState<Errors>({})
 	const [saving, setSaving] = useState(false)
 	const [saveError, setSaveError] = useState('')
+
+	// Valores que se muestran y se guardan: incluye los campos calculados
+	const effective = useMemo<Item>(() => {
+		const out: Item = { ...values }
+		for (const f of block.fields) if (f.computed) out[f.id] = f.computed(values, answers)
+		return out
+	}, [values, answers, block.fields])
 
 	const repeat = block.repeat
 	const isLast = index === BLOCKS.length - 1
@@ -90,7 +97,7 @@ function BlockForm({ block, index }: { block: Block; index: number }) {
 	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault()
 		setSaveError('')
-		const answer = cleanAnswer(block, { values, items: repeat ? items : undefined })
+		const answer = cleanAnswer(block, { values: effective, items: repeat ? items : undefined })
 		const found = validateBlock(block, answer, answers)
 		if (Object.keys(found).length > 0) {
 			setErrors(found)
@@ -126,7 +133,7 @@ function BlockForm({ block, index }: { block: Block; index: number }) {
 				{block.fields.length > 0 && (
 					<FieldGroup
 						fields={block.fields}
-						values={values}
+						values={effective}
 						errors={errors}
 						idPrefix="f"
 						answers={answers}

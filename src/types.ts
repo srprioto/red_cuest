@@ -20,6 +20,8 @@ export interface Field {
 	/** Agrupa campos bajo un subtítulo dentro del bloque. */
 	section?: string
 	hint?: string
+	/** Hint que depende de las respuestas de otros bloques. */
+	dynamicHint?: (all: Answers) => string
 	helpLink?: { label: string; href: string }
 	unit?: string
 	placeholder?: string
@@ -44,6 +46,11 @@ export interface Field {
 	showIf?: (values: Item) => boolean
 	/** Muestra "Actual: X" con lo que se respondió en otro bloque. */
 	ref?: FieldRef
+	/**
+	 * Campo calculado: se llena solo, se ve pero no se puede editar.
+	 * Devuelve null mientras no haya datos suficientes.
+	 */
+	computed?: (values: Item, all: Answers) => number | null
 }
 
 /** Configuración para bloques con registros repetibles (botón "+"). */

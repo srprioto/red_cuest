@@ -10,13 +10,26 @@ interface Props {
 	domId: string
 	/** Texto de referencia (lo declarado en la Parte 1). */
 	reference?: string | null
+	/** Reemplaza al hint del campo (hints que dependen de otras respuestas). */
+	hintOverride?: string
 	onChange: (value: Scalar) => void
 }
 
-export default function FieldInput({ field, value, error, domId, reference, onChange }: Props) {
+export default function FieldInput({
+	field,
+	value,
+	error,
+	domId,
+	reference,
+	hintOverride,
+	onChange,
+}: Props) {
 	const labelId = `${domId}-label`
 	const errorId = `${domId}-error`
 	const isNA = field.allowNA && value === NA_VALUE
+	// Campo calculado: visible, pero solo lectura
+	const isAuto = !!field.computed
+	const hint = hintOverride ?? field.hint
 
 	const describedBy = error ? errorId : undefined
 
@@ -65,17 +78,20 @@ export default function FieldInput({ field, value, error, domId, reference, onCh
 		)
 	} else if (field.type === 'number') {
 		control = (
-			<div className="input-wrap">
+			<div className={`input-wrap ${isAuto ? 'input-wrap--auto' : ''}`}>
 				<input
 					id={domId}
-					className="input"
+					className={`input ${isAuto ? 'input--auto' : ''}`}
 					type="number"
 					inputMode={field.decimal ? 'decimal' : 'numeric'}
 					min={field.min ?? 0}
 					max={field.max}
 					step={field.decimal ? 'any' : 1}
-					placeholder={field.placeholder ?? '0'}
+					placeholder={isAuto ? 'Se calcula solo' : (field.placeholder ?? '0')}
 					value={typeof value === 'number' ? value : ''}
+					readOnly={isAuto}
+					tabIndex={isAuto ? -1 : undefined}
+					aria-readonly={isAuto || undefined}
 					aria-invalid={!!error}
 					aria-describedby={describedBy}
 					onWheel={(e) => e.currentTarget.blur()}
@@ -83,7 +99,11 @@ export default function FieldInput({ field, value, error, domId, reference, onCh
 						onChange(e.target.value === '' ? null : Number(e.target.value))
 					}
 				/>
-				{field.unit && <span className="input-wrap__unit">{field.unit}</span>}
+				{isAuto ? (
+					<span className="input-wrap__unit input-wrap__unit--auto">Automático</span>
+				) : (
+					field.unit && <span className="input-wrap__unit">{field.unit}</span>
+				)}
 			</div>
 		)
 	} else {
@@ -130,9 +150,9 @@ export default function FieldInput({ field, value, error, domId, reference, onCh
 						{field.label}
 					</label>
 				)}
-				{field.hint && (
+				{hint && (
 					<p className="field__hint">
-						{field.hint}{' '}
+						{hint}{' '}
 						{field.helpLink && (
 							<a href={field.helpLink.href} target="_blank" rel="noopener noreferrer">
 								{field.helpLink.label}

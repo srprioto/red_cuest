@@ -1,5 +1,5 @@
 import { num } from '../lib/utils'
-import type { Block, Errors } from '../types'
+import type { Answers, Block, Errors } from '../types'
 import {
 	ESTADOS,
 	OPERADORES,
@@ -10,6 +10,10 @@ import {
 	hayInternet,
 	siNo,
 } from './fields'
+
+/** Total de PCs y laptops declarados en Oficinas y Asistencial. */
+const totalEquipos = (all: Answers) =>
+	num(all.oficinas?.values.pc) + num(all.asistencial?.values.pc) + num(all.asistencial?.values.laptop)
 
 /** PARTE 1: Cantidad actual de equipos informáticos por áreas. */
 export const ACTUAL_BLOCKS: Block[] = [
@@ -57,22 +61,34 @@ export const ACTUAL_BLOCKS: Block[] = [
 		title: 'Características de los equipos',
 		subtitle: 'Clasifica los equipos de cómputo según su procesador.',
 		fields: [
-			cantidad('equipos_menor_i5', 'Equipos con procesador menor a Core i5'),
+			cantidad('equipos_menor_i5', 'Equipos con procesador menor a Core i5', {
+				dynamicHint: (all) => `Entre PCs y laptops declaraste ${totalEquipos(all)} equipos en total.`,
+			}),
 			cantidad('equipos_mayor_i5', 'Equipos con procesador Core i5 o superior', {
-				hint: 'La suma de ambos campos debe coincidir con los PCs y laptops que declaraste antes.',
+				hint: 'Se calcula automáticamente: total de equipos menos los de procesador menor a Core i5.',
+				computed: (v, all) => {
+					if (typeof v.equipos_menor_i5 !== 'number') return null
+					const resto = totalEquipos(all) - v.equipos_menor_i5
+					return resto >= 0 ? resto : null
+				},
 			}),
 		],
 		crossValidate: (v, all): Errors => {
-			const declarados =
-				num(all.oficinas?.values.pc) +
-				num(all.asistencial?.values.pc) +
-				num(all.asistencial?.values.laptop)
-			const suma = num(v.equipos_menor_i5) + num(v.equipos_mayor_i5)
-			return suma === declarados
-				? {}
-				: {
-						equipos_mayor_i5: `La suma de ambos campos es ${suma}, pero declaraste ${declarados} entre PCs y laptops. Deben coincidir.`,
-					}
+			// Si el campo editable está vacío, ya lo marca como obligatorio
+			if (typeof v.equipos_menor_i5 !== 'number') return {}
+			const total = totalEquipos(all)
+			if (v.equipos_menor_i5 > total) {
+				return {
+					equipos_menor_i5: `No puede ser mayor que el total de PCs y laptops que declaraste (${total}).`,
+				}
+			}
+			// Si se editaron Oficinas o Asistencial después, el valor guardado quedó desfasado
+			if (num(v.equipos_menor_i5) + num(v.equipos_mayor_i5) !== total) {
+				return {
+					equipos_mayor_i5: `El total de equipos cambió (ahora son ${total}). Guarda este bloque otra vez para recalcularlo.`,
+				}
+			}
+			return {}
 		},
 	},
 	{

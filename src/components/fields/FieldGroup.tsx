@@ -43,6 +43,7 @@ export default function FieldGroup({
 							error={errors[keyOf ? keyOf(f.id) : f.id]}
 							domId={`${idPrefix}-${f.id}`}
 							reference={f.ref && answers ? getReference(f.ref, answers) : null}
+							hintOverride={f.dynamicHint && answers ? f.dynamicHint(answers) : undefined}
 							onChange={(v) => onChange(f.id, v)}
 						/>
 					</Fragment>

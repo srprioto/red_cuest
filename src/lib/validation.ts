@@ -61,7 +61,7 @@ export function validateField(f: Field, value: Scalar | undefined, values: Item)
 function validateList(fields: Field[], values: Item, keyOf: (id: string) => string): Errors {
 	const errors: Errors = {}
 	for (const f of fields) {
-		if (!isVisible(f, values)) continue
+		if (!isVisible(f, values) || f.computed) continue // los calculados los valida crossValidate
 		const err = validateField(f, values[f.id], values)
 		if (err) errors[keyOf(f.id)] = err
 	}

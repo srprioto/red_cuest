@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react'
-import { NavLink } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useSurvey } from '../../context/SurveyContext'
 import { BLOCKS } from '../../survey'
 
@@ -10,10 +11,25 @@ import { BLOCKS } from '../../survey'
  */
 export default function BlockIndex() {
 	const { metadata } = useSurvey()
+	const { pathname } = useLocation()
+	const navRef = useRef<HTMLElement>(null)
 	const visible = BLOCKS.slice(0, Math.min(metadata.currentBlock + 1, BLOCKS.length))
 
+	// Mantiene centrado el círculo activo cuando el índice tiene scroll
+	useEffect(() => {
+		const nav = navRef.current
+		const active = nav?.querySelector<HTMLElement>('.index__link.is-active')
+		if (!nav || !active) return
+		const n = nav.getBoundingClientRect()
+		const a = active.getBoundingClientRect()
+		nav.scrollTo({
+			top: nav.scrollTop + (a.top - n.top) - n.height / 2 + a.height / 2,
+			behavior: 'smooth',
+		})
+	}, [pathname, metadata.currentBlock])
+
 	return (
-		<nav className="index" aria-label="Índice de la encuesta">
+		<nav ref={navRef} className="index" aria-label="Índice de la encuesta">
 			<ol className="index__list">
 				{visible.map((b, i) => {
 					const done = metadata.completedBlocks.includes(b.id)
