@@ -1,0 +1,44 @@
+{
+	"ipress": "00002390",
+	"encargado": "cualquier cosa",
+	"creadoEn": "2026-10-09T20:25:28.350Z",
+	"actualizadoEn": "2026-10-09T20:25:42.455Z",
+	"metadata": {
+		"started": true,
+		"finished": false,
+		"completedBlocks": [
+			"siga",
+			"oficinas",
+			"asistencial"
+		],
+		"currentBlock": 3,
+		"lastBlock": "asistencial",
+		"startedAt": "2026-10-09T20:25:28.350Z",
+		"updatedAt": "2026-10-09T20:25:42.451Z",
+		"finishedAt": null
+	},
+	"answers": {
+		"siga": {
+			"values": {
+				"siga_patrimonial": 1
+			}
+		},
+		"oficinas": {
+			"values": {
+				"pc": 10,
+				"impresora": 10,
+				"tablet": 10,
+				"lector_huellas": 10
+			}
+		},
+		"asistencial": {
+			"values": {
+				"pc": 1,
+				"laptop": 1,
+				"impresoras": 1,
+				"lector_dnie": 1,
+				"tablet": 1
+			}
+		}
+	}
+}

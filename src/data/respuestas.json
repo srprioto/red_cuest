@@ -16,40 +16,6 @@
         "lector_dnie": 1,
         "tablet": 1
       }
-    },
-    "caracteristicas": {
-      "values": {
-        "equipos_menor_i5": 1,
-        "equipos_mayor_i5": 2
-      }
-    },
-    "recepcion": {
-      "values": {
-        "tv": 1,
-        "totem": 1
-      }
-    },
-    "red": {
-      "values": {
-        "cableado_cat6": 1,
-        "cableado_cat5": 1,
-        "puntos_red": 1,
-        "switch_administrable": 1,
-        "switch_no_administrable": 0,
-        "ip_red_interna": "No aplica",
-        "mascara_red_interna": "No aplica"
-      }
-    },
-    "internet": {
-      "values": {
-        "ancho_banda": 0
-      }
-    },
-    "servidores": {
-      "values": {
-        "tiene_servidores": 0
-      },
-      "items": []
     }
   }
 }

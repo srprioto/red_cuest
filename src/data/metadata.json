@@ -2,20 +2,15 @@
   "default": {
     "respondentId": "default",
     "started": true,
-    "finished": true,
+    "finished": false,
     "completedBlocks": [
       "oficinas",
-      "asistencial",
-      "caracteristicas",
-      "recepcion",
-      "red",
-      "internet",
-      "servidores"
+      "asistencial"
     ],
-    "currentBlock": 7,
-    "lastBlock": "oficinas",
-    "startedAt": "2026-10-09T01:59:53.470Z",
-    "updatedAt": "2026-10-09T03:25:09.197Z",
-    "finishedAt": "2026-10-09T02:03:19.824Z"
+    "currentBlock": 2,
+    "lastBlock": "asistencial",
+    "startedAt": "2026-10-09T14:35:46.855Z",
+    "updatedAt": "2026-10-09T19:15:35.841Z",
+    "finishedAt": null
   }
 }

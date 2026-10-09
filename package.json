@@ -8,8 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-	"dev": "concurrently -n web,api -c cyan,magenta \"vite\" \"tsx watch server/index.ts\"",
-  	"api": "tsx server/index.ts"
+	"dev": "concurrently -n web,api -c cyan,magenta \"vite\" \"tsx watch backend/index.ts\"",
+	"api": "tsx backend/index.ts",
+	"ipress:importar": "tsx backend/scripts/importar-ipress.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
