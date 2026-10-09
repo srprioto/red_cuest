@@ -1,0 +1,21 @@
+{
+  "default": {
+    "respondentId": "default",
+    "started": true,
+    "finished": true,
+    "completedBlocks": [
+      "oficinas",
+      "asistencial",
+      "caracteristicas",
+      "recepcion",
+      "red",
+      "internet",
+      "servidores"
+    ],
+    "currentBlock": 7,
+    "lastBlock": "oficinas",
+    "startedAt": "2026-10-09T01:59:53.470Z",
+    "updatedAt": "2026-10-09T03:25:09.197Z",
+    "finishedAt": "2026-10-09T02:03:19.824Z"
+  }
+}

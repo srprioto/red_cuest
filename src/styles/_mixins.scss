@@ -1,0 +1,14 @@
+@use 'sass:map';
+@use 'variables' as *;
+
+// Mobile first: los estilos base son de móvil, escritorio los amplía.
+@mixin up($bp) {
+  @media (min-width: map.get($breakpoints, $bp)) {
+    @content;
+  }
+}
+
+@mixin focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($orange, 0.45);
+}
