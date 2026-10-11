@@ -8,7 +8,7 @@ export interface Total {
 }
 
 /** Totales de la Parte 1. Se calculan, no se preguntan. */
-export function totalesActuales(a: Answers): Total[] {
+function totalesActuales(a: Answers): Total[] {
 	const adm = a.oficinas?.values ?? {}
 	const asi = a.asistencial?.values ?? {}
 	const net = a.internet?.values ?? {}
@@ -33,7 +33,7 @@ export function totalesActuales(a: Answers): Total[] {
 }
 
 /** Totales de la Parte 2 ("totales brecha"). */
-export function totalesBrecha(a: Answers): Total[] {
+function totalesBrecha(a: Answers): Total[] {
 	const adm = a.faltante_oficinas?.values ?? {}
 	const asi = a.faltante_asistencial?.values ?? {}
 

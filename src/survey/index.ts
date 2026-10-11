@@ -3,7 +3,7 @@ import type { Answers, Block, FieldRef, Phase } from '../types'
 import { ACTUAL_BLOCKS } from './parte1'
 import { FALTANTE_BLOCKS } from './parte2'
 
-export interface PhaseInfo {
+interface PhaseInfo {
 	label: string
 	title: string
 	intro: string

@@ -11,6 +11,7 @@ import { ApiError, authenticate, loadSurvey, saveSurvey } from '../api/client'
 import { SESSION_KEY } from '../config'
 import { deceptiveProgress } from '../lib/progress'
 import { BLOCKS, TOTAL_BLOCKS } from '../survey'
+import { firstIncompleteIndex } from '../survey/progreso'
 import type { Answers, BlockAnswer, Metadata, Session, SurveyFile } from '../types'
 
 const emptyMetadata = (): Metadata => ({
@@ -24,10 +25,17 @@ const emptyMetadata = (): Metadata => ({
 	finishedAt: null,
 })
 
-const mergeMetadata = (partial: Partial<Metadata> | undefined): Metadata => ({
-	...emptyMetadata(),
-	...(partial ?? {}),
-})
+/**
+ * Une lo guardado con los valores por defecto y recalcula el avance contra la
+ * lista actual de bloques (así no se rompe si se agregan bloques después).
+ */
+const mergeMetadata = (partial: Partial<Metadata> | undefined): Metadata => {
+	const merged = { ...emptyMetadata(), ...(partial ?? {}) }
+	const known = new Set(BLOCKS.map((b) => b.id))
+	const completedBlocks = merged.completedBlocks.filter((id) => known.has(id))
+	const currentBlock = firstIncompleteIndex(completedBlocks)
+	return { ...merged, completedBlocks, currentBlock, finished: currentBlock >= TOTAL_BLOCKS }
+}
 
 function readStoredIpress(): string | null {
 	try {
@@ -50,7 +58,7 @@ function storeSession(session: Session | null) {
 
 type Status = 'loading' | 'ready' | 'error'
 
-export type LoginResult = { ok: true; metadata: Metadata } | { ok: false; error: string }
+type LoginResult = { ok: true; metadata: Metadata } | { ok: false; error: string }
 
 interface SurveyContextValue {
 	status: Status
@@ -69,14 +77,18 @@ interface SurveyContextValue {
 const SurveyContext = createContext<SurveyContextValue | null>(null)
 
 export function SurveyProvider({ children }: { children: ReactNode }) {
-	const [status, setStatus] = useState<Status>('loading')
+	const [status, setStatus] = useState<Status>(() => (readStoredIpress() ? 'loading' : 'ready'))
 	const [session, setSession] = useState<Session | null>(null)
 	const [answers, setAnswers] = useState<Answers>({})
 	const [metadata, setMetadata] = useState<Metadata>(emptyMetadata)
 	const [attempt, setAttempt] = useState(0)
 
 	const applySurvey = useCallback((survey: SurveyFile) => {
-		setSession({ ipress: survey.ipress, encargado: survey.encargado })
+		setSession({
+			ipress: survey.ipress,
+			encargado: survey.encargado,
+			establecimiento: survey.establecimiento,
+		})
 		setAnswers(survey.answers ?? {})
 		setMetadata(mergeMetadata(survey.metadata))
 	}, [])
@@ -85,11 +97,7 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		let cancelled = false
 		const stored = readStoredIpress()
-		if (!stored) {
-			setStatus('ready')
-			return
-		}
-		setStatus('loading')
+		if (!stored) return
 		loadSurvey(stored)
 			.then((survey) => {
 				if (cancelled) return
@@ -110,7 +118,10 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
 		}
 	}, [attempt, applySurvey])
 
-	const reload = useCallback(() => setAttempt((n) => n + 1), [])
+	const reload = useCallback(() => {
+		setStatus('loading')
+		setAttempt((n) => n + 1)
+	}, [])
 
 	const login = useCallback(
 		async (codigo: string, nombre: string): Promise<LoginResult> => {
@@ -153,14 +164,15 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
 			const index = BLOCKS.findIndex((b) => b.id === blockId)
 			if (index === -1) return false
 			const now = new Date().toISOString()
-			const currentBlock = Math.max(metadata.currentBlock, index + 1)
+			const completedBlocks = Array.from(new Set([...metadata.completedBlocks, blockId]))
+			const currentBlock = firstIncompleteIndex(completedBlocks)
 			const finished = currentBlock >= TOTAL_BLOCKS
 			return persist(
 				{ ...answers, [blockId]: answer },
 				{
 					...metadata,
 					started: true,
-					completedBlocks: Array.from(new Set([...metadata.completedBlocks, blockId])),
+					completedBlocks,
 					currentBlock,
 					finished,
 					finishedAt: finished ? (metadata.finishedAt ?? now) : null,

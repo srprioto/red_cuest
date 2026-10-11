@@ -4,30 +4,25 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-	"dev": "concurrently -n web,api -c cyan,magenta \"vite\" \"tsx watch backend/index.ts\"",
-	"api": "tsx backend/index.ts",
-	"ipress:importar": "tsx backend/scripts/importar-ipress.ts"
+    "dev": "concurrently -n web,api -c cyan,magenta \"vite\" \"tsx watch backend/index.ts\"",
+    "api": "tsx backend/index.ts",
+    "ipress:importar": "tsx backend/scripts/importar-ipress.ts"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.9.1",
-    "cors": "^2.8.6",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "framer-motion": "^14.0.0",
     "lucide-react": "^1.52.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-hook-form": "^7.89.0",
     "react-router-dom": "^7.18.4",
-    "xlsx": "^0.18.5",
-    "zod": "^4.6.5"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",

@@ -49,7 +49,7 @@ export default function FieldInput({
 						role="radio"
 						aria-checked={value === o.v}
 						className={`toggle__option ${value === o.v ? 'is-selected' : ''}`}
-						onClick={() => onChange(o.v)}
+						onClick={() => onChange(field.optional && value === o.v ? null : o.v)}
 					>
 						{o.label}
 					</button>
@@ -113,8 +113,8 @@ export default function FieldInput({
 				<input
 					id={domId}
 					className="input"
-					type="text"
-					autoComplete="off"
+					type={field.secret ? 'password' : 'text'}
+					autoComplete={field.secret ? 'current-password' : 'off'}
 					inputMode={field.inputMode ?? (field.type === 'text' ? 'text' : 'decimal')}
 					maxLength={field.maxLength}
 					placeholder={field.placeholder}
@@ -144,10 +144,12 @@ export default function FieldInput({
 				{field.type === 'toggle' ? (
 					<span id={labelId} className="field__label">
 						{field.label}
+						{field.optional && <span className="field__optional">Opcional</span>}
 					</span>
 				) : (
 					<label id={labelId} htmlFor={domId} className="field__label">
 						{field.label}
+						{field.optional && <span className="field__optional">Opcional</span>}
 					</label>
 				)}
 				{hint && (

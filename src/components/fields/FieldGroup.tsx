@@ -27,13 +27,11 @@ export default function FieldGroup({
 	onChange,
 }: Props) {
 	const visible = fields.filter((f) => isVisible(f, values))
-	let lastSection: string | undefined
 
 	return (
 		<div className="fields">
-			{visible.map((f) => {
-				const showSection = f.section && f.section !== lastSection
-				lastSection = f.section
+			{visible.map((f, i) => {
+				const showSection = f.section && f.section !== visible[i - 1]?.section
 				return (
 					<Fragment key={f.id}>
 						{showSection && <h3 className="fields__section">{f.section}</h3>}

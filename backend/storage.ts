@@ -1,38 +1,50 @@
 /**
  * Acceso a los archivos JSON del backend.
  *
- *   backend/data/ipress.json            -> lista maestra de códigos IPRESS y su estado
- *   backend/data/encuestas/<codigo>.json -> una encuesta por establecimiento
+ *   backend/data/establecimientos.json    -> lista maestra (se llena a mano) + estado de cada uno
+ *   backend/data/encuestas/<codigo>.json  -> una encuesta por establecimiento
+ *   backend/data/users.json               -> usuarios del panel de administración
+ *   backend/data/.secret                  -> clave para firmar sesiones (se crea sola)
  */
+import { randomBytes } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
+import type { Estado, SurveyFile } from '../src/types'
 
-export const DATA_DIR = path.resolve(process.cwd(), 'backend/data')
-export const IPRESS_FILE = path.join(DATA_DIR, 'ipress.json')
-export const ENCUESTAS_DIR = path.join(DATA_DIR, 'encuestas')
+const DATA_DIR = path.resolve(process.cwd(), 'backend/data')
+const ESTABLECIMIENTOS_FILE = path.join(DATA_DIR, 'establecimientos.json')
+const ENCUESTAS_DIR = path.join(DATA_DIR, 'encuestas')
+const USERS_FILE = path.join(DATA_DIR, 'users.json')
+const SECRET_FILE = path.join(DATA_DIR, '.secret')
 
-export type Estado = 'pendiente' | 'en_curso' | 'completada'
+/** Una fila de establecimientos.json, con las llaves tal como se escriben a mano. */
+interface EstablecimientoRaw {
+	[key: string]: unknown
+	'CODIGO IPRESS'?: unknown
+	ESTADO?: Estado
+	'ACTUALIZADO EN'?: string
+}
 
-export interface IpressEntry {
+export interface Establecimiento {
 	codigo: string
-	estado: Estado
-	nombre?: string
-	actualizadoEn?: string
+	nombre: string
+	provincia: string
+	distrito: string
+	microred: string
+	red: string
 }
 
-export interface SurveyFile {
-	ipress: string
-	encargado: string
+interface AdminUser {
+	usuario: string
+	password: string
 	creadoEn: string
-	actualizadoEn: string
-	metadata: Record<string, unknown>
-	answers: Record<string, unknown>
 }
 
-/** "2420" -> "00002420". Devuelve null si no son solo dígitos (máx. 8). */
+/** 2420 -> "00002420". Devuelve null si no son solo dígitos (máx. 8). */
 export function normalizeCodigo(raw: unknown): string | null {
-	if (typeof raw !== 'string') return null
-	const digits = raw.trim()
+	const text = typeof raw === 'number' && Number.isInteger(raw) ? String(raw) : raw
+	if (typeof text !== 'string') return null
+	const digits = text.trim()
 	if (!/^\d{1,8}$/.test(digits)) return null
 	return digits.padStart(8, '0')
 }
@@ -58,25 +70,52 @@ export function enqueue<T>(task: () => Promise<T>): Promise<T> {
 	return run
 }
 
-// ---------- Lista maestra de IPRESS ----------
-export async function readIpressList(): Promise<IpressEntry[]> {
-	return (await readJson<IpressEntry[]>(IPRESS_FILE)) ?? []
+// ---------- Establecimientos ----------
+const text = (v: unknown) => (v === null || v === undefined ? '' : String(v).trim())
+
+function toEstablecimiento(raw: EstablecimientoRaw): Establecimiento | null {
+	const codigo = normalizeCodigo(raw['CODIGO IPRESS'])
+	if (!codigo) return null
+	return {
+		codigo,
+		nombre: text(raw['NOMBRE DEL ESTABLECIMIENTO']),
+		provincia: text(raw.PROVINCIA),
+		distrito: text(raw.DISTRITO),
+		microred: text(raw.MICRORED),
+		red: text(raw.RED),
+	}
 }
 
-export const writeIpressList = (list: IpressEntry[]) => writeJson(IPRESS_FILE, list)
+const readRaw = async () => (await readJson<EstablecimientoRaw[]>(ESTABLECIMIENTOS_FILE)) ?? []
 
-export async function findIpress(codigo: string): Promise<IpressEntry | undefined> {
-	return (await readIpressList()).find((e) => e.codigo === codigo)
+/** Lista válida y sin códigos repetidos (si se repite, gana el primero). */
+export async function readEstablecimientos(): Promise<Establecimiento[]> {
+	const seen = new Set<string>()
+	const out: Establecimiento[] = []
+	for (const raw of await readRaw()) {
+		const est = toEstablecimiento(raw)
+		if (!est || seen.has(est.codigo)) continue
+		seen.add(est.codigo)
+		out.push(est)
+	}
+	return out
 }
 
-/** Cambia el estado solo si es distinto. No usa enqueue: llamar dentro de uno. */
+export async function findEstablecimiento(codigo: string): Promise<Establecimiento | undefined> {
+	return (await readEstablecimientos()).find((e) => e.codigo === codigo)
+}
+
+/**
+ * Escribe el estado sobre el item del establecimiento (campos ESTADO y
+ * "ACTUALIZADO EN"). Solo escribe si cambió. No usa enqueue: llamar dentro de uno.
+ */
 export async function setEstado(codigo: string, estado: Estado): Promise<void> {
-	const list = await readIpressList()
-	const entry = list.find((e) => e.codigo === codigo)
-	if (!entry || entry.estado === estado) return
-	entry.estado = estado
-	entry.actualizadoEn = new Date().toISOString()
-	await writeIpressList(list)
+	const list = await readRaw()
+	const raw = list.find((r) => normalizeCodigo(r['CODIGO IPRESS']) === codigo)
+	if (!raw || raw.ESTADO === estado) return
+	raw.ESTADO = estado
+	raw['ACTUALIZADO EN'] = new Date().toISOString()
+	await writeJson(ESTABLECIMIENTOS_FILE, list)
 }
 
 // ---------- Encuestas ----------
@@ -87,4 +126,29 @@ export const readSurvey = (codigo: string) => readJson<SurveyFile>(surveyPath(co
 export async function writeSurvey(codigo: string, survey: SurveyFile): Promise<void> {
 	await fs.mkdir(ENCUESTAS_DIR, { recursive: true })
 	await writeJson(surveyPath(codigo), survey)
+}
+
+// ---------- Usuarios del panel ----------
+export async function readUsers(): Promise<AdminUser[]> {
+	return (await readJson<AdminUser[]>(USERS_FILE)) ?? []
+}
+
+export const writeUsers = (users: AdminUser[]) => writeJson(USERS_FILE, users)
+
+// ---------- Clave para firmar sesiones ----------
+let secretPromise: Promise<string> | null = null
+export function getSecret(): Promise<string> {
+	secretPromise ??= (async () => {
+		try {
+			const existing = (await fs.readFile(SECRET_FILE, 'utf-8')).trim()
+			if (existing) return existing
+		} catch {
+			// no existe todavía
+		}
+		const secret = randomBytes(32).toString('hex')
+		await fs.mkdir(DATA_DIR, { recursive: true })
+		await fs.writeFile(SECRET_FILE, secret, 'utf-8')
+		return secret
+	})()
+	return secretPromise
 }

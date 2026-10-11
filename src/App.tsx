@@ -1,5 +1,8 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import AdminApp from './admin/AdminApp'
+import { AdminProvider } from './admin/AdminContext'
+import RegisterPage from './admin/RegisterPage'
 import AppShell from './components/layout/AppShell'
 import { SurveyProvider, useSurvey } from './context/SurveyContext'
 import BlockPage from './pages/BlockPage'
@@ -62,12 +65,35 @@ function Content() {
 	)
 }
 
+/** Encuesta para los establecimientos (pseudo-login con código IPRESS). */
+function SurveyApp() {
+	return (
+		<SurveyProvider>
+			<Content />
+		</SurveyProvider>
+	)
+}
+
 export default function App() {
 	return (
 		<BrowserRouter>
-			<SurveyProvider>
-				<Content />
-			</SurveyProvider>
+			<Routes>
+				<Route path="/panel_admin/*" element={<AdminApp />} />
+				<Route
+					path="/register"
+					element={
+						<AdminProvider>
+							<RegisterPage />
+						</AdminProvider>
+					}
+				/>
+				<Route path="*" element={<SurveyApp />} />
+			</Routes>
 		</BrowserRouter>
 	)
 }
+
+
+
+// /panel_admin
+// /register

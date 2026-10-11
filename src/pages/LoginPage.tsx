@@ -59,12 +59,23 @@ export default function LoginPage() {
 		setBusy(false)
 
 		if (result.ok) return navigate(resumeTarget(result.metadata))
-		if (result.error === 'codigo_no_registrado') {
-			setErrors({ ipress: 'Este código IPRESS no está registrado. Verifica que esté bien escrito.' })
-		} else if (result.error === 'red') {
-			setAlert('No se pudo conectar con el servidor. Inténtalo otra vez en unos minutos.')
-		} else {
-			setAlert('No se pudo validar tus datos. Revisa la información e inténtalo otra vez.')
+
+		switch (result.error) {
+			case 'codigo_no_registrado':
+				setErrors({ ipress: 'Este código IPRESS no está registrado. Verifica que esté bien escrito.' })
+				break
+			case 'codigo_invalido':
+				setErrors({ ipress: 'El código IPRESS no es válido. Debe tener solo números.' })
+				break
+			case 'nombre_invalido':
+				setErrors({ nombre: 'Ingresa un nombre válido (entre 3 y 120 caracteres).' })
+				break
+			case 'red':
+			case 'servidor_no_disponible':
+				setAlert('No se pudo comunicar con el servidor de la encuesta. Inténtalo otra vez en unos minutos.')
+				break
+			default:
+				setAlert('Ocurrió un error al validar tus datos. Inténtalo otra vez.')
 		}
 	}
 

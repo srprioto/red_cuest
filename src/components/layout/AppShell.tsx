@@ -41,7 +41,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
 				</div>
 				{session && (
 					<div className="topbar__session">
-						<span className="topbar__code">IPRESS {session.ipress}</span>
+						<span className="topbar__code">
+								IPRESS {session.ipress}
+								{session.establecimiento ? ` · ${session.establecimiento}` : ''}
+							</span>
 						<button type="button" className="icon-btn" onClick={onLogout}>
 							<LogOut size={16} />
 							<span>Salir</span>

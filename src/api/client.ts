@@ -13,32 +13,48 @@ export class ApiError extends Error {
 	}
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function send(path: string, init?: RequestInit): Promise<Response> {
 	const res = await fetch(`${API_BASE}${path}`, init)
 	if (!res.ok) {
-		let code = 'error'
+		// Si la respuesta no trae un { error } del backend (por ejemplo un 502 de Vite
+		// porque la API no está corriendo), se considera servidor no disponible.
+		let code = 'servidor_no_disponible'
 		try {
-			code = ((await res.json()) as { error?: string }).error ?? code
+			const body = (await res.json()) as { error?: string }
+			if (body.error) code = body.error
 		} catch {
-			// respuesta sin cuerpo
+			// sin cuerpo JSON
 		}
 		throw new ApiError(res.status, code)
 	}
-	return (await res.json()) as T
+	return res
 }
 
-const json = (method: string, body: unknown): RequestInit => ({
+export async function request<T>(path: string, init?: RequestInit): Promise<T> {
+	return (await (await send(path, init)).json()) as T
+}
+
+/** Para descargas (Excel). */
+export async function requestBlob(path: string, init?: RequestInit): Promise<Blob> {
+	return (await send(path, init)).blob()
+}
+
+export const jsonInit = (
+	method: string,
+	body: unknown,
+	headers?: Record<string, string>,
+): RequestInit => ({
 	method,
-	headers: { 'Content-Type': 'application/json' },
+	headers: { 'Content-Type': 'application/json', ...headers },
 	body: JSON.stringify(body),
 })
 
 /** Pseudo-login: valida el código IPRESS y trae (o crea) la encuesta. */
 export const authenticate = (codigo: string, nombre: string) =>
-	request<{ survey: SurveyFile; nuevo: boolean }>('/auth', json('POST', { codigo, nombre }))
+	request<{ survey: SurveyFile; nuevo: boolean }>('/auth', jsonInit('POST', { codigo, nombre }))
 
 export const loadSurvey = (codigo: string) =>
 	request<SurveyFile>(`/encuesta/${encodeURIComponent(codigo)}`)
 
 export const saveSurvey = (codigo: string, payload: SurveyPayload) =>
-	request<{ ok: true }>(`/encuesta/${encodeURIComponent(codigo)}`, json('PUT', payload))
+	request<{ ok: true }>(`/encuesta/${encodeURIComponent(codigo)}`, jsonInit('PUT', payload))

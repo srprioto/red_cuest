@@ -1,11 +1,14 @@
 export type Scalar = number | string | null
+
+/** Estado de un establecimiento: pendiente = sin iniciar. */
+export type Estado = 'pendiente' | 'en_curso' | 'completada'
 /** Un registro: { idCampo: valor } */
 export type Item = Record<string, Scalar>
 
 /** Las dos grandes categorías de la encuesta. */
 export type Phase = 'actual' | 'faltante'
 
-export type FieldType = 'number' | 'text' | 'toggle' | 'select' | 'ip' | 'mask'
+type FieldType = 'number' | 'text' | 'toggle' | 'select' | 'ip' | 'mask'
 
 /** Apunta a una respuesta de otro bloque, para mostrarla como referencia. */
 export interface FieldRef {
@@ -26,8 +29,14 @@ export interface Field {
 	unit?: string
 	placeholder?: string
 	/** Teclado que se abre en el celular (campos de texto). */
-	inputMode?: 'text' | 'numeric' | 'decimal'
+	inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email'
 	maxLength?: number
+	/** Pide formato válido, pero solo si el campo no está vacío. */
+	format?: 'celular' | 'email'
+	/** Oculta lo que se escribe (contraseñas). */
+	secret?: boolean
+	/** El campo puede quedar vacío. */
+	optional?: boolean
 	/** Solo para type = 'select'. */
 	options?: string[]
 	/** Muestra la casilla "No aplica" (text, ip, mask). */
@@ -100,12 +109,17 @@ export interface Metadata {
 export interface Session {
 	ipress: string
 	encargado: string
+	/** Nombre del establecimiento (viene de establecimientos.json). */
+	establecimiento?: string
 }
 
 /** Contenido de backend/data/encuestas/<codigo>.json */
 export interface SurveyFile {
 	ipress: string
 	encargado: string
+	establecimiento?: string
+	creadoEn?: string
+	actualizadoEn?: string
 	metadata: Partial<Metadata>
 	answers: Answers
 }

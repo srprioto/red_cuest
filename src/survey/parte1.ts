@@ -1,5 +1,5 @@
 import { num } from '../lib/utils'
-import type { Answers, Block, Errors } from '../types'
+import type { Answers, Block, Errors, Field } from '../types'
 import {
 	ESTADOS,
 	OPERADORES,
@@ -10,6 +10,32 @@ import {
 	hayInternet,
 	siNo,
 } from './fields'
+
+/** Nombre, celular y correo de un funcionario (todos opcionales). */
+const contacto = (prefix: string, cargo: string, section: string): Field[] => [
+	{ id: `${prefix}_nombre`, label: cargo, type: 'text', optional: true, section },
+	{
+		id: `${prefix}_celular`,
+		label: `Celular ${cargo.charAt(0).toLowerCase()}${cargo.slice(1)}`,
+		type: 'text',
+		optional: true,
+		format: 'celular',
+		inputMode: 'tel',
+		maxLength: 15,
+		placeholder: '987654321',
+		section,
+	},
+	{
+		id: `${prefix}_correo`,
+		label: `Correo ${cargo.charAt(0).toLowerCase()}${cargo.slice(1)}`,
+		type: 'text',
+		optional: true,
+		format: 'email',
+		inputMode: 'email',
+		placeholder: 'nombre@correo.com',
+		section,
+	},
+]
 
 /** Total de PCs y laptops declarados en Oficinas y Asistencial. */
 const totalEquipos = (all: Answers) =>
@@ -26,6 +52,31 @@ export const ACTUAL_BLOCKS: Block[] = [
 			siNo(
 				'siga_patrimonial',
 				'¿La información que va a declarar está registrada en el SIGA Patrimonial?',
+			),
+		],
+	},
+	{
+		id: 'datos',
+		phase: 'actual',
+		title: 'Actualización de datos',
+		subtitle: 'Actualiza los datos de contacto del establecimiento. Todos los campos son opcionales.',
+		fields: [
+			siNo('ris', 'RIS', { optional: true, section: 'Establecimiento' }),
+			{
+				id: 'telefonos',
+				label: 'Teléfonos',
+				type: 'text',
+				optional: true,
+				inputMode: 'tel',
+				placeholder: '084 123456',
+				hint: 'Si hay más de uno, sepáralos con coma.',
+				section: 'Establecimiento',
+			},
+			...contacto('director', 'Funcionario (Director) de EESS', 'Director del establecimiento'),
+			...contacto(
+				'ti',
+				'Funcionario responsable de informática o TI',
+				'Responsable de informática o TI',
 			),
 		],
 	},

@@ -1,12 +1,14 @@
 import { Router } from 'express'
+import { describeProgress } from '../src/survey/progreso'
+import type { Metadata, SurveyFile } from '../src/types'
 import {
 	enqueue,
-	findIpress,
+	findEstablecimiento,
 	normalizeCodigo,
 	readSurvey,
 	setEstado,
 	writeSurvey,
-	type SurveyFile,
+	type Establecimiento,
 } from './storage.js'
 
 export const router = Router()
@@ -14,10 +16,16 @@ export const router = Router()
 const isObject = (v: unknown): v is Record<string, unknown> =>
 	typeof v === 'object' && v !== null && !Array.isArray(v)
 
+/** Agrega el nombre del establecimiento para mostrarlo en la encuesta. */
+const withName = (survey: SurveyFile, est: Establecimiento): SurveyFile => ({
+	...survey,
+	establecimiento: est.nombre,
+})
+
 /**
- * Pseudo-login: valida el código IPRESS y devuelve la encuesta de ese
- * establecimiento. Si no existe todavía, la crea. Si ya existe, la devuelve
- * para continuar o editar.
+ * Pseudo-login: valida el código IPRESS contra establecimientos.json y devuelve
+ * la encuesta de ese establecimiento. Si no existe todavía, la crea. Si ya existe,
+ * la devuelve para continuar o editar.
  */
 router.post('/auth', async (req, res) => {
 	const body = (req.body ?? {}) as Record<string, unknown>
@@ -31,8 +39,8 @@ router.post('/auth', async (req, res) => {
 
 	try {
 		const result = await enqueue(async () => {
-			const entry = await findIpress(codigo)
-			if (!entry) return null
+			const est = await findEstablecimiento(codigo)
+			if (!est) return null
 
 			const now = new Date().toISOString()
 			let survey = await readSurvey(codigo)
@@ -48,14 +56,13 @@ router.post('/auth', async (req, res) => {
 					answers: {},
 				}
 				await writeSurvey(codigo, survey)
+				await setEstado(codigo, 'en_curso')
 			} else if (survey.encargado !== nombre) {
 				survey.encargado = nombre
 				survey.actualizadoEn = now
 				await writeSurvey(codigo, survey)
 			}
-
-			if (entry.estado === 'pendiente') await setEstado(codigo, 'en_curso')
-			return { survey, nuevo }
+			return { survey: withName(survey, est), nuevo }
 		})
 
 		if (!result) return void res.status(404).json({ error: 'codigo_no_registrado' })
@@ -71,9 +78,9 @@ router.get('/encuesta/:codigo', async (req, res) => {
 	const codigo = normalizeCodigo(req.params.codigo)
 	if (!codigo) return void res.status(400).json({ error: 'codigo_invalido' })
 	try {
-		const survey = await readSurvey(codigo)
-		if (!survey) return void res.status(404).json({ error: 'encuesta_no_encontrada' })
-		res.json(survey)
+		const [survey, est] = await Promise.all([readSurvey(codigo), findEstablecimiento(codigo)])
+		if (!survey || !est) return void res.status(404).json({ error: 'encuesta_no_encontrada' })
+		res.json(withName(survey, est))
 	} catch (err) {
 		console.error(err)
 		res.status(500).json({ error: 'error_servidor' })
@@ -96,12 +103,12 @@ router.put('/encuesta/:codigo', async (req, res) => {
 			if (!survey) return false
 			const updated: SurveyFile = {
 				...survey,
-				answers,
-				metadata,
+				answers: answers as SurveyFile['answers'],
+				metadata: metadata as Partial<Metadata>,
 				actualizadoEn: new Date().toISOString(),
 			}
 			await writeSurvey(codigo, updated)
-			await setEstado(codigo, metadata.finished === true ? 'completada' : 'en_curso')
+			await setEstado(codigo, describeProgress(updated.metadata, true).estado)
 			return true
 		})
 		if (!found) return void res.status(404).json({ error: 'encuesta_no_encontrada' })

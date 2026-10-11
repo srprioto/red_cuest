@@ -1,14 +1,16 @@
 /**
  * Servidor local de la encuesta (puerto 3001).
- * Todo lo del backend vive en esta carpeta: rutas, almacenamiento y datos.
+ * Todo lo del backend vive en esta carpeta: rutas, almacenamiento, Excel y datos.
  */
 import express, { type ErrorRequestHandler } from 'express'
+import { adminRouter } from './admin.js'
 import { router } from './routes.js'
 
 const PORT = 3001
 
 const app = express()
 app.use(express.json({ limit: '2mb' }))
+app.use('/api/admin', adminRouter)
 app.use('/api', router)
 
 app.use((_req, res) => {

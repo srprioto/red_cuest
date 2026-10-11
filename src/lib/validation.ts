@@ -5,9 +5,11 @@ import { itemKey } from './utils'
 const OCTET = '(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)'
 const IPV4 = new RegExp(`^${OCTET}(\\.${OCTET}){3}$`)
 
-export const isValidIPv4 = (s: string) => IPV4.test(s.trim())
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-export function isValidMask(raw: string): boolean {
+const isValidIPv4 = (s: string) => IPV4.test(s.trim())
+
+function isValidMask(raw: string): boolean {
 	const s = raw.trim()
 	if (/^\/([0-9]|[12]\d|3[0-2])$/.test(s)) return true
 	if (!isValidIPv4(s)) return false
@@ -21,11 +23,13 @@ const isEmpty = (v: Scalar | undefined) =>
 
 export const isVisible = (f: Field, values: Item) => !f.showIf || f.showIf(values)
 
-export function validateField(f: Field, value: Scalar | undefined, values: Item): string | null {
+function validateField(f: Field, value: Scalar | undefined, values: Item): string | null {
 	if (f.type === 'toggle') {
+		if (f.optional && (value === null || value === undefined)) return null
 		return value === 0 || value === 1 ? null : 'Selecciona una opción.'
 	}
 	if (isEmpty(value)) {
+		if (f.optional) return null
 		return f.type === 'select' ? 'Selecciona una opción.' : 'Este campo es obligatorio.'
 	}
 	if (f.allowNA && value === NA_VALUE) return null
@@ -53,8 +57,14 @@ export function validateField(f: Field, value: Scalar | undefined, values: Item)
 			return isValidMask(String(value))
 				? null
 				: 'Ingresa una máscara válida. Ejemplo: 255.255.255.0 o /24'
-		default:
+		default: {
+			const text = String(value).trim()
+			if (f.format === 'celular' && !/^9\d{8}$/.test(text.replace(/[\s-]/g, ''))) {
+				return 'Ingresa un celular de 9 dígitos que empiece con 9.'
+			}
+			if (f.format === 'email' && !EMAIL.test(text)) return 'Ingresa un correo válido.'
 			return null
+		}
 	}
 }
 
