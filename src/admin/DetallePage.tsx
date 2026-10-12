@@ -164,7 +164,7 @@ function DetalleContent({ codigo }: { codigo: string }) {
 											</span>
 											{b.title}
 											{!b.done && survey && progreso.actual === b.title && (
-												<em>aquí se quedó</em>
+												<em>Se quedó aquí</em>
 											)}
 										</li>
 									))}
