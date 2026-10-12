@@ -16,7 +16,7 @@ export default function WelcomePage() {
 			<div className="welcome__panel">
 				<Logo />
 				<p className="welcome__org">{ORG_NAME}</p>
-				<h1>Encuesta sobre brechas tecnológicas en los establecimientos de salud</h1>
+				<h1>Brechas tecnológicas en establecimientos de salud</h1>
 				<p className="welcome__lead">
 					Con tus respuestas conoceremos qué equipos, redes y servicios tecnológicos tiene cada establecimiento de salud de
 					Cusco, y dónde hacen falta.
