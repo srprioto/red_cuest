@@ -1,131 +1,25 @@
 {
 	"ipress": "00002420",
-	"encargado": "Renato Luna",
-	"creadoEn": "2026-10-09T20:17:39.723Z",
-	"actualizadoEn": "2026-10-09T20:20:01.946Z",
+	"encargado": "asdfasd fdfgh",
+	"creadoEn": "2026-10-11T04:27:39.677Z",
+	"actualizadoEn": "2026-10-11T04:27:54.936Z",
 	"metadata": {
 		"started": true,
-		"finished": true,
+		"finished": false,
 		"completedBlocks": [
-			"siga",
-			"oficinas",
-			"asistencial",
-			"caracteristicas",
-			"recepcion",
-			"red",
-			"internet",
-			"servidores",
-			"faltante_oficinas",
-			"faltante_asistencial",
-			"faltante_recepcion",
-			"faltante_red",
-			"faltante_internet",
-			"faltante_servidores"
+			"siga"
 		],
-		"currentBlock": 14,
-		"lastBlock": "faltante_servidores",
-		"startedAt": "2026-10-09T20:17:39.723Z",
-		"updatedAt": "2026-10-09T20:20:01.939Z",
-		"finishedAt": "2026-10-09T20:20:01.939Z"
+		"currentBlock": 1,
+		"lastBlock": "siga",
+		"startedAt": "2026-10-11T04:27:39.677Z",
+		"updatedAt": "2026-10-11T04:27:54.933Z",
+		"finishedAt": null
 	},
 	"answers": {
 		"siga": {
 			"values": {
 				"siga_patrimonial": 1
 			}
-		},
-		"oficinas": {
-			"values": {
-				"pc": 1,
-				"impresora": 1,
-				"tablet": 1,
-				"lector_huellas": 1
-			}
-		},
-		"asistencial": {
-			"values": {
-				"pc": 1,
-				"laptop": 1,
-				"impresoras": 1,
-				"lector_dnie": 1,
-				"tablet": 1
-			}
-		},
-		"caracteristicas": {
-			"values": {
-				"equipos_menor_i5": 1,
-				"equipos_mayor_i5": 2
-			}
-		},
-		"recepcion": {
-			"values": {
-				"tv": 1,
-				"totem": 1
-			}
-		},
-		"red": {
-			"values": {
-				"cableado_cat6": 1,
-				"cableado_cat5": 1,
-				"puntos_red": 1,
-				"switch_administrable": 1,
-				"switch_no_administrable": 1,
-				"ip_red_interna": "No aplica",
-				"mascara_red_interna": "No aplica"
-			}
-		},
-		"internet": {
-			"values": {
-				"ancho_banda": 0
-			}
-		},
-		"servidores": {
-			"values": {
-				"tiene_servidores": 0
-			},
-			"items": []
-		},
-		"faltante_oficinas": {
-			"values": {
-				"pc": 1,
-				"impresora": 1,
-				"tablet": 1,
-				"lector_huellas": 1
-			}
-		},
-		"faltante_asistencial": {
-			"values": {
-				"pc": 1,
-				"laptop": 1,
-				"impresoras": 1,
-				"lector_dnie": 1,
-				"tablet": 1
-			}
-		},
-		"faltante_recepcion": {
-			"values": {
-				"tv": 1,
-				"totem": 1
-			}
-		},
-		"faltante_red": {
-			"values": {
-				"cableado_cat6": 1,
-				"cableado_cat5": 1,
-				"puntos_red": 1,
-				"switch": 1
-			}
-		},
-		"faltante_internet": {
-			"values": {
-				"ancho_banda": 0
-			}
-		},
-		"faltante_servidores": {
-			"values": {
-				"requiere_servidores": 0
-			},
-			"items": []
 		}
 	}
 }
