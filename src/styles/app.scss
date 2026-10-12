@@ -1399,11 +1399,15 @@ input[type='number'] {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 10px;
+		
 	}
 
 	&__note {
 		font-size: 0.85rem;
 		color: $muted;
+	}
+	.btn{
+		font-size: 0.9em;
 	}
 }
 
@@ -1439,6 +1443,7 @@ input[type='number'] {
 	background: $surface;
 	color: $ink;
 	font-weight: 600;
+	font-size: 0.9em;
 
 	&:hover {
 		border-color: $line-strong;
@@ -1474,6 +1479,7 @@ input[type='number'] {
 		text-align: left;
 		vertical-align: middle;
 		border-bottom: 1px solid $line;
+		font-size: 0.7em;
 	}
 
 	th {

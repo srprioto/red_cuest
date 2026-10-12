@@ -6,7 +6,7 @@ import { descargarUnificado, listarEstablecimientos } from './api'
 import { useAdmin } from './AdminContext'
 import { saveBlob, today } from './download'
 import EstadoBadge from './EstadoBadge'
-import { formatDate } from './format'
+// import { formatDate } from './format'
 import { ESTADO_TEXTO, type FilaSeguimiento } from './types'
 
 type Filtro = Estado | 'todos'
@@ -128,7 +128,7 @@ export default function SeguimientoPage() {
 						onClick={() => descargar('todas')}
 					>
 						<Download size={18} />
-						{descargando === 'todas' ? 'Generando…' : `Descargar todo, incluso vacíos (${filtered.length})`}
+						{descargando === 'todas' ? 'Generando…' : `Descargar todo (${filtered.length})`}
 					</button>
 				</div>
 				<p className="admin-toolbar__note">
@@ -163,14 +163,14 @@ export default function SeguimientoPage() {
 						<thead>
 							<tr>
 								<th>Código</th>
-								<th>Establecimiento</th>
+								<th>Establec.</th>
 								<th>Provincia</th>
 								<th>Distrito</th>
 								<th>Microred</th>
 								<th>Red</th>
 								<th>Estado</th>
 								<th>Avance</th>
-								<th>Última actividad</th>
+								<th></th>
 								<th>
 									<span className="sr-only">Acciones</span>
 								</th>
@@ -201,10 +201,10 @@ export default function SeguimientoPage() {
 											</span>
 										</div>
 									</td>
-									<td>{formatDate(r.actualizadoEn)}</td>
+									{/* <td>{formatDate(r.actualizadoEn)}</td> */}
 									<td>
 										<Link className="icon-btn" to={`/panel_admin/establecimiento/${r.codigo}`}>
-											Ver respuestas
+											Ver
 										</Link>
 									</td>
 								</tr>

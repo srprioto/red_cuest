@@ -1,0 +1,157 @@
+{
+	"ipress": "00002386",
+	"encargado": "juaquin",
+	"creadoEn": "2026-10-12T13:03:10.886Z",
+	"actualizadoEn": "2026-10-12T13:07:36.081Z",
+	"metadata": {
+		"started": true,
+		"finished": true,
+		"completedBlocks": [
+			"siga",
+			"datos",
+			"oficinas",
+			"asistencial",
+			"caracteristicas",
+			"recepcion",
+			"red",
+			"internet",
+			"servidores",
+			"faltante_oficinas",
+			"faltante_asistencial",
+			"faltante_recepcion",
+			"faltante_red",
+			"faltante_internet",
+			"faltante_servidores"
+		],
+		"currentBlock": 15,
+		"lastBlock": "faltante_servidores",
+		"startedAt": "2026-10-12T13:03:10.886Z",
+		"updatedAt": "2026-10-12T13:07:36.091Z",
+		"finishedAt": "2026-10-12T13:07:36.091Z"
+	},
+	"answers": {
+		"siga": {
+			"values": {
+				"siga_patrimonial": 1
+			}
+		},
+		"datos": {
+			"values": {
+				"ris": 1,
+				"telefonos": "984741614",
+				"director_nombre": "juaquin",
+				"director_celular": "984741614",
+				"director_correo": "asdf@sdfasdf.com",
+				"ti_nombre": "quinjua",
+				"ti_celular": "984741614",
+				"ti_correo": "asdf@sdfasdf.com"
+			}
+		},
+		"oficinas": {
+			"values": {
+				"pc": 1,
+				"impresora": 1,
+				"tablet": 1,
+				"lector_huellas": 1
+			}
+		},
+		"asistencial": {
+			"values": {
+				"pc": 1,
+				"laptop": 1,
+				"impresoras": 1,
+				"lector_dnie": 1,
+				"tablet": 1
+			}
+		},
+		"caracteristicas": {
+			"values": {
+				"equipos_menor_i5": 1,
+				"equipos_mayor_i5": 2
+			}
+		},
+		"recepcion": {
+			"values": {
+				"tv": 1,
+				"totem": 1
+			}
+		},
+		"red": {
+			"values": {
+				"cableado_cat6": 1,
+				"cableado_cat5": 1,
+				"puntos_red": 1,
+				"switch_administrable": 1,
+				"switch_no_administrable": 1,
+				"ip_red_interna": "No aplica",
+				"mascara_red_interna": "No aplica"
+			}
+		},
+		"internet": {
+			"values": {
+				"ancho_banda": 100,
+				"ip_publica": "No aplica",
+				"tipo_contrato": "Convenio",
+				"tipo_internet": "Internet empresarial",
+				"operador": "Claro",
+				"fibra": 1,
+				"satelital": 0,
+				"cobre": 0,
+				"seguridad_gestionada": 1,
+				"segundo_carrier": 0
+			}
+		},
+		"servidores": {
+			"values": {
+				"tiene_servidores": 0
+			},
+			"items": []
+		},
+		"faltante_oficinas": {
+			"values": {
+				"pc": 1,
+				"impresora": 1,
+				"tablet": 1,
+				"lector_huellas": 1
+			}
+		},
+		"faltante_asistencial": {
+			"values": {
+				"pc": 1,
+				"laptop": 1,
+				"impresoras": 1,
+				"lector_dnie": 1,
+				"tablet": 1
+			}
+		},
+		"faltante_recepcion": {
+			"values": {
+				"tv": 1,
+				"totem": 1
+			}
+		},
+		"faltante_red": {
+			"values": {
+				"cableado_cat6": 1,
+				"cableado_cat5": 1,
+				"puntos_red": 1,
+				"switch": 1
+			}
+		},
+		"faltante_internet": {
+			"values": {
+				"ancho_banda": 100,
+				"operador": "Otros",
+				"fibra": 1,
+				"satelital": 0,
+				"cobre": 0
+			}
+		},
+		"faltante_servidores": {
+			"values": {
+				"requiere_servidores": 0
+			},
+			"items": []
+		}
+	}
+}
