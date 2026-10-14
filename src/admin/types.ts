@@ -1,14 +1,4 @@
-import type { Estado, SurveyFile } from '../types'
-
-/** Datos fijos del establecimiento (vienen de backend/data/establecimientos.json). */
-export interface EstablecimientoInfo {
-	codigo: string
-	nombre: string
-	provincia: string
-	distrito: string
-	microred: string
-	red: string
-}
+import type { EstablecimientoInfo, Estado, SurveyFile } from '../types'
 
 /** Una fila de la lista de seguimiento. */
 export interface FilaSeguimiento extends EstablecimientoInfo {

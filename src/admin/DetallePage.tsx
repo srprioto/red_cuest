@@ -117,7 +117,8 @@ function DetalleContent({ codigo }: { codigo: string }) {
 					<div><dt>Distrito</dt><dd>{est.distrito || '—'}</dd></div>
 					<div><dt>Microred</dt><dd>{est.microred || '—'}</dd></div>
 					<div><dt>Red</dt><dd>{est.red || '—'}</dd></div>
-					<div><dt>Encargado</dt><dd>{survey?.encargado ?? '—'}</dd></div>
+					<div><dt>Categoría</dt><dd>{est.categoria || '—'}</dd></div>
+					<div><dt>Jefe del establecimiento</dt><dd>{survey?.encargado ?? '—'}</dd></div>
 					<div><dt>Fecha de inicio</dt><dd>{formatDate(survey?.creadoEn ?? null)}</dd></div>
 					<div><dt>Última actividad</dt><dd>{formatDate(survey?.actualizadoEn ?? null)}</dd></div>
 					<div>
@@ -164,7 +165,7 @@ function DetalleContent({ codigo }: { codigo: string }) {
 											</span>
 											{b.title}
 											{!b.done && survey && progreso.actual === b.title && (
-												<em>Se quedó aquí</em>
+												<em>aquí se quedó</em>
 											)}
 										</li>
 									))}

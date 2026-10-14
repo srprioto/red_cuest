@@ -5,6 +5,18 @@ export type Estado = 'pendiente' | 'en_curso' | 'completada'
 /** Un registro: { idCampo: valor } */
 export type Item = Record<string, Scalar>
 
+/** Datos fijos del establecimiento (vienen de backend/data/establecimientos.json). */
+export interface EstablecimientoInfo {
+	codigo: string
+	nombre: string
+	provincia: string
+	distrito: string
+	red: string
+	microred: string
+	/** Ej. "I-1" o "Sin Categoría". */
+	categoria: string
+}
+
 /** Las dos grandes categorías de la encuesta. */
 export type Phase = 'actual' | 'faltante'
 
@@ -31,8 +43,9 @@ export interface Field {
 	/** Teclado que se abre en el celular (campos de texto). */
 	inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email'
 	maxLength?: number
-	/** Pide formato válido, pero solo si el campo no está vacío. */
-	format?: 'celular' | 'email'
+	/** Pide el tipo de contenido correcto, pero solo si el campo no está vacío. */
+	/** letras: nombres · telefono: solo números (con espacios, guiones o comas) · email: correo. */
+	format?: 'letras' | 'telefono' | 'email'
 	/** Oculta lo que se escribe (contraseñas). */
 	secret?: boolean
 	/** El campo puede quedar vacío. */
@@ -55,6 +68,8 @@ export interface Field {
 	showIf?: (values: Item) => boolean
 	/** Muestra "Actual: X" con lo que se respondió en otro bloque. */
 	ref?: FieldRef
+	/** Valor inicial a partir de quien ingresó (solo si el bloque aún no tiene respuestas). */
+	prefill?: (session: Session) => Scalar
 	/**
 	 * Campo calculado: se llena solo, se ve pero no se puede editar.
 	 * Devuelve null mientras no haya datos suficientes.
@@ -109,15 +124,16 @@ export interface Metadata {
 export interface Session {
 	ipress: string
 	encargado: string
-	/** Nombre del establecimiento (viene de establecimientos.json). */
-	establecimiento?: string
+	/** Datos del establecimiento (vienen de establecimientos.json). */
+	establecimiento?: EstablecimientoInfo
 }
 
 /** Contenido de backend/data/encuestas/<codigo>.json */
 export interface SurveyFile {
 	ipress: string
+	/** Jefe del establecimiento (el nombre que se escribe al ingresar). */
 	encargado: string
-	establecimiento?: string
+	establecimiento?: EstablecimientoInfo
 	creadoEn?: string
 	actualizadoEn?: string
 	metadata: Partial<Metadata>

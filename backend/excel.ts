@@ -226,11 +226,12 @@ export function buildUnificado(filas: Fila[]): ExcelJS.Workbook {
 		{ group: 'Establecimiento', header: 'Distrito', width: 18, value: (f) => f.est.distrito },
 		{ group: 'Establecimiento', header: 'Microred', width: 18, value: (f) => f.est.microred },
 		{ group: 'Establecimiento', header: 'Red', width: 24, value: (f) => f.est.red },
+		{ group: 'Establecimiento', header: 'Categoría', width: 14, value: (f) => f.est.categoria },
 		{ group: 'Avance de la encuesta', header: 'Estado', width: 14, value: (f) => ESTADO_TEXTO[f.progreso.estado].toUpperCase() },
 		{ group: 'Avance de la encuesta', header: 'Bloques completados', width: 12, value: (f) => f.progreso.completados },
 		{ group: 'Avance de la encuesta', header: 'Total de bloques', width: 12, value: (f) => f.progreso.total },
 		{ group: 'Avance de la encuesta', header: 'Bloque en el que quedó', width: 30, value: (f) => f.progreso.actual },
-		{ group: 'Avance de la encuesta', header: 'Encargado', width: 28, value: (f) => f.survey?.encargado ?? null },
+		{ group: 'Avance de la encuesta', header: 'Jefe del establecimiento', width: 28, value: (f) => f.survey?.encargado ?? null },
 		{ group: 'Avance de la encuesta', header: 'Fecha de inicio', width: 18, value: (f) => toDate(f.survey?.creadoEn) },
 		{ group: 'Avance de la encuesta', header: 'Última actividad', width: 18, value: (f) => toDate(f.survey?.actualizadoEn) },
 		{
@@ -313,6 +314,7 @@ export function buildResumen(fila: Fila): ExcelJS.Workbook {
 	pair('Distrito', est.distrito)
 	pair('Microred', est.microred)
 	pair('Red', est.red)
+	pair('Categoría', est.categoria)
 	gap()
 
 	banner('Estado y avance', NAVY)
@@ -329,7 +331,7 @@ export function buildResumen(fila: Fila): ExcelJS.Workbook {
 		'Bloques pendientes',
 		pendientes.length === 0 ? 'Ninguno' : pendientes.map((b) => `${b.title} (${PHASES[b.phase].label})`).join('\n'),
 	)
-	pair('Encargado', survey?.encargado ?? null)
+	pair('Jefe del establecimiento', survey?.encargado ?? null)
 	pair('Fecha de inicio', toDate(survey?.creadoEn))
 	pair('Última actividad', toDate(survey?.actualizadoEn))
 	pair('Fecha de finalización', progreso.finished ? toDate(survey?.metadata.finishedAt) : null)

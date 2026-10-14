@@ -6,7 +6,7 @@ import { descargarUnificado, listarEstablecimientos } from './api'
 import { useAdmin } from './AdminContext'
 import { saveBlob, today } from './download'
 import EstadoBadge from './EstadoBadge'
-// import { formatDate } from './format'
+import { formatDate } from './format'
 import { ESTADO_TEXTO, type FilaSeguimiento } from './types'
 
 type Filtro = Estado | 'todos'
@@ -46,7 +46,7 @@ export default function SeguimientoPage() {
 			(rows ?? []).map((r) => ({
 				r,
 				text: norm(
-					[r.codigo, r.nombre, r.provincia, r.distrito, r.microred, r.red, r.encargado ?? '', ESTADO_TEXTO[r.estado]].join(' '),
+					[r.codigo, r.nombre, r.provincia, r.distrito, r.microred, r.red, r.categoria, r.encargado ?? '', ESTADO_TEXTO[r.estado]].join(' '),
 				),
 			})),
 		[rows],
@@ -89,7 +89,7 @@ export default function SeguimientoPage() {
 					<input
 						className="input"
 						type="search"
-						placeholder="Buscar por código, nombre, provincia, distrito, microred, red o encargado"
+						placeholder="Buscar por código, nombre, categoría, provincia, distrito, microred, red o jefe"
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
 						aria-label="Buscar establecimientos"
@@ -128,7 +128,7 @@ export default function SeguimientoPage() {
 						onClick={() => descargar('todas')}
 					>
 						<Download size={18} />
-						{descargando === 'todas' ? 'Generando…' : `Descargar todo (${filtered.length})`}
+						{descargando === 'todas' ? 'Generando…' : `Descargar todo, incluso vacíos (${filtered.length})`}
 					</button>
 				</div>
 				<p className="admin-toolbar__note">
@@ -163,14 +163,15 @@ export default function SeguimientoPage() {
 						<thead>
 							<tr>
 								<th>Código</th>
-								<th>Establec.</th>
+								<th>Establecimiento</th>
 								<th>Provincia</th>
 								<th>Distrito</th>
 								<th>Microred</th>
 								<th>Red</th>
+				<th>Categoría</th>
 								<th>Estado</th>
 								<th>Avance</th>
-								<th></th>
+								<th>Última actividad</th>
 								<th>
 									<span className="sr-only">Acciones</span>
 								</th>
@@ -182,12 +183,13 @@ export default function SeguimientoPage() {
 									<td className="admin-table__code">{r.codigo}</td>
 									<td>
 										<strong>{r.nombre}</strong>
-										{r.encargado && <small>Encargado: {r.encargado}</small>}
+										{r.encargado && <small>Jefe: {r.encargado}</small>}
 									</td>
 									<td>{r.provincia}</td>
 									<td>{r.distrito}</td>
 									<td>{r.microred}</td>
 									<td>{r.red}</td>
+				<td>{r.categoria || '—'}</td>
 									<td>
 										<EstadoBadge estado={r.estado} />
 									</td>
@@ -201,10 +203,10 @@ export default function SeguimientoPage() {
 											</span>
 										</div>
 									</td>
-									{/* <td>{formatDate(r.actualizadoEn)}</td> */}
+									<td>{formatDate(r.actualizadoEn)}</td>
 									<td>
 										<Link className="icon-btn" to={`/panel_admin/establecimiento/${r.codigo}`}>
-											Ver
+											Ver respuestas
 										</Link>
 									</td>
 								</tr>

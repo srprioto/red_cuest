@@ -9,7 +9,7 @@
 import { randomBytes } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import type { Estado, SurveyFile } from '../src/types'
+import type { Estado, EstablecimientoInfo, SurveyFile } from '../src/types'
 
 const DATA_DIR = path.resolve(process.cwd(), 'backend/data')
 const ESTABLECIMIENTOS_FILE = path.join(DATA_DIR, 'establecimientos.json')
@@ -25,14 +25,7 @@ interface EstablecimientoRaw {
 	'ACTUALIZADO EN'?: string
 }
 
-export interface Establecimiento {
-	codigo: string
-	nombre: string
-	provincia: string
-	distrito: string
-	microred: string
-	red: string
-}
+export type Establecimiento = EstablecimientoInfo
 
 interface AdminUser {
 	usuario: string
@@ -81,8 +74,9 @@ function toEstablecimiento(raw: EstablecimientoRaw): Establecimiento | null {
 		nombre: text(raw['NOMBRE DEL ESTABLECIMIENTO']),
 		provincia: text(raw.PROVINCIA),
 		distrito: text(raw.DISTRITO),
-		microred: text(raw.MICRORED),
 		red: text(raw.RED),
+		microred: text(raw.MICRORED),
+		categoria: text(raw.CATEGORIA),
 	}
 }
 

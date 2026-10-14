@@ -8,7 +8,7 @@ import { emptyItem } from '../lib/utils'
 import { resumeTarget } from '../lib/navigation'
 import { cleanAnswer, validateBlock } from '../lib/validation'
 import { BLOCKS, PHASES } from '../survey'
-import type { Block, Errors, Item, Scalar } from '../types'
+import type { Block, Errors, Item, Scalar, Session } from '../types'
 
 /** Valida que el bloque exista y que el usuario ya pueda verlo. */
 export default function BlockPage() {
@@ -23,12 +23,22 @@ export default function BlockPage() {
 	return <BlockForm key={BLOCKS[index].id} block={BLOCKS[index]} index={index} />
 }
 
+/** Respuestas guardadas + campos que se autocompletan (solo si nunca se respondieron). */
+function initialValues(block: Block, saved: Item | undefined, session: Session | null): Item {
+	const values: Item = { ...saved }
+	if (!session) return values
+	for (const f of block.fields) {
+		if (f.prefill && values[f.id] === undefined) values[f.id] = f.prefill(session)
+	}
+	return values
+}
+
 function BlockForm({ block, index }: { block: Block; index: number }) {
 	const navigate = useNavigate()
-	const { answers, metadata, saveBlock } = useSurvey()
+	const { session, answers, metadata, saveBlock } = useSurvey()
 	const saved = answers[block.id]
 
-	const [values, setValues] = useState<Item>(saved?.values ?? {})
+	const [values, setValues] = useState<Item>(() => initialValues(block, saved?.values, session))
 	const [items, setItems] = useState<Item[]>(saved?.items ?? [])
 	const [errors, setErrors] = useState<Errors>({})
 	const [saving, setSaving] = useState(false)

@@ -5,14 +5,15 @@ import FieldInput from '../components/fields/FieldInput'
 import { IPRESS_LENGTH } from '../config'
 import { useSurvey } from '../context/SurveyContext'
 import { resumeTarget } from '../lib/navigation'
+import { isOnlyLetters } from '../lib/validation'
 import type { Field, Scalar } from '../types'
 
 const FIELD_NOMBRE: Field = {
 	id: 'nombre',
-	label: 'Nombre del encargado',
+	label: 'Jefe del establecimiento',
 	type: 'text',
 	placeholder: 'Nombres y apellidos',
-	hint: 'Persona que responde la encuesta.',
+	hint: 'Nombre completo del jefe del establecimiento.',
 }
 
 const FIELD_IPRESS: Field = {
@@ -48,7 +49,8 @@ export default function LoginPage() {
 		const name = typeof nombre === 'string' ? nombre.trim() : ''
 		const code = typeof ipress === 'string' ? ipress.trim() : ''
 		const found: Errors = {}
-		if (name.length < 3) found.nombre = 'Ingresa el nombre del encargado.'
+		if (name.length < 3) found.nombre = 'Ingresa el nombre del jefe del establecimiento.'
+	else if (!isOnlyLetters(name)) found.nombre = 'Escribe solo letras.'
 		if (!code) found.ipress = 'Ingresa el código IPRESS.'
 		else if (!/^\d+$/.test(code)) found.ipress = 'El código solo debe tener números.'
 		setErrors(found)
@@ -68,7 +70,7 @@ export default function LoginPage() {
 				setErrors({ ipress: 'El código IPRESS no es válido. Debe tener solo números.' })
 				break
 			case 'nombre_invalido':
-				setErrors({ nombre: 'Ingresa un nombre válido (entre 3 y 120 caracteres).' })
+				setErrors({ nombre: 'Ingresa un nombre válido.' })
 				break
 			case 'red':
 			case 'servidor_no_disponible':

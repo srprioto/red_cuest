@@ -16,10 +16,10 @@ export const router = Router()
 const isObject = (v: unknown): v is Record<string, unknown> =>
 	typeof v === 'object' && v !== null && !Array.isArray(v)
 
-/** Agrega el nombre del establecimiento para mostrarlo en la encuesta. */
-const withName = (survey: SurveyFile, est: Establecimiento): SurveyFile => ({
+/** Agrega los datos del establecimiento para mostrarlos en la encuesta. */
+const withEstablecimiento = (survey: SurveyFile, est: Establecimiento): SurveyFile => ({
 	...survey,
-	establecimiento: est.nombre,
+	establecimiento: est,
 })
 
 /**
@@ -30,6 +30,7 @@ const withName = (survey: SurveyFile, est: Establecimiento): SurveyFile => ({
 router.post('/auth', async (req, res) => {
 	const body = (req.body ?? {}) as Record<string, unknown>
 	const codigo = normalizeCodigo(body.codigo)
+	// "nombre" es el jefe del establecimiento
 	const nombre = typeof body.nombre === 'string' ? body.nombre.trim().replace(/\s+/g, ' ') : ''
 
 	if (!codigo) return void res.status(400).json({ error: 'codigo_invalido' })
@@ -62,7 +63,7 @@ router.post('/auth', async (req, res) => {
 				survey.actualizadoEn = now
 				await writeSurvey(codigo, survey)
 			}
-			return { survey: withName(survey, est), nuevo }
+			return { survey: withEstablecimiento(survey, est), nuevo }
 		})
 
 		if (!result) return void res.status(404).json({ error: 'codigo_no_registrado' })
@@ -80,7 +81,7 @@ router.get('/encuesta/:codigo', async (req, res) => {
 	try {
 		const [survey, est] = await Promise.all([readSurvey(codigo), findEstablecimiento(codigo)])
 		if (!survey || !est) return void res.status(404).json({ error: 'encuesta_no_encontrada' })
-		res.json(withName(survey, est))
+		res.json(withEstablecimiento(survey, est))
 	} catch (err) {
 		console.error(err)
 		res.status(500).json({ error: 'error_servidor' })

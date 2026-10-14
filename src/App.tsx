@@ -6,6 +6,7 @@ import RegisterPage from './admin/RegisterPage'
 import AppShell from './components/layout/AppShell'
 import { SurveyProvider, useSurvey } from './context/SurveyContext'
 import BlockPage from './pages/BlockPage'
+import EstablecimientoPage from './pages/EstablecimientoPage'
 import LoginPage from './pages/LoginPage'
 import PhaseIntroPage from './pages/PhaseIntroPage'
 import SummaryPage from './pages/SummaryPage'
@@ -30,6 +31,7 @@ function AnimatedRoutes() {
 				<Routes location={location}>
 					<Route path="/" element={<WelcomePage />} />
 					<Route path="/ingreso" element={<LoginPage />} />
+					<Route path="/establecimiento" element={<EstablecimientoPage />} />
 					<Route path="/encuesta/:blockId" element={<BlockPage />} />
 					<Route path="/parte/:phase" element={<PhaseIntroPage />} />
 					<Route path="/resumen" element={<SummaryPage />} />
@@ -92,8 +94,3 @@ export default function App() {
 		</BrowserRouter>
 	)
 }
-
-
-
-// /panel_admin
-// /register

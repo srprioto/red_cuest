@@ -1008,6 +1008,93 @@ input[type='number'] {
 	}
 }
 
+// ---------- Datos del establecimiento (antes de la encuesta) ----------
+.est-card {
+	gap: 0;
+	padding: 24px 20px;
+
+	@include up(md) {
+		padding: 32px 36px;
+	}
+
+	&__top {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px 32px;
+		padding-bottom: 20px;
+		border-bottom: 2px solid $line-strong;
+	}
+
+	&__code,
+	&__category {
+		display: grid;
+		gap: 4px;
+
+		span {
+			color: $muted;
+			font-size: 0.85rem;
+			font-weight: 600;
+		}
+	}
+
+	&__code strong {
+		font-family: $font-display;
+		font-size: clamp(1.8rem, 6vw, 2.4rem);
+		line-height: 1;
+		letter-spacing: 0.02em;
+		color: $navy;
+		font-variant-numeric: tabular-nums;
+	}
+}
+
+.est-pill {
+	justify-self: start;
+	padding: 4px 16px;
+	border-radius: 999px;
+	background: var(--accent-soft);
+	color: var(--accent-ink);
+	font-weight: 700;
+}
+
+.est-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 20px 32px;
+	margin: 24px 0 0;
+
+	@include up(sm) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	> div {
+		padding-left: 14px;
+		border-left: 4px solid var(--accent);
+	}
+
+	dt {
+		color: $muted;
+		font-size: 0.85rem;
+	}
+
+	dd {
+		margin: 2px 0 0;
+		font-size: 1.05rem;
+		font-weight: 700;
+		overflow-wrap: anywhere;
+	}
+}
+
+.est-actions {
+	flex-direction: column-reverse;
+	gap: 12px;
+
+	@include up(sm) {
+		flex-direction: row;
+	}
+}
+
 // ---------- Resumen ----------
 .summary {
 	display: grid;
@@ -1399,15 +1486,11 @@ input[type='number'] {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 10px;
-		
 	}
 
 	&__note {
 		font-size: 0.85rem;
 		color: $muted;
-	}
-	.btn{
-		font-size: 0.9em;
 	}
 }
 
@@ -1443,7 +1526,6 @@ input[type='number'] {
 	background: $surface;
 	color: $ink;
 	font-weight: 600;
-	font-size: 0.9em;
 
 	&:hover {
 		border-color: $line-strong;
@@ -1479,7 +1561,6 @@ input[type='number'] {
 		text-align: left;
 		vertical-align: middle;
 		border-bottom: 1px solid $line;
-		font-size: 0.7em;
 	}
 
 	th {

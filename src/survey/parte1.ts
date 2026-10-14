@@ -11,31 +11,46 @@ import {
 	siNo,
 } from './fields'
 
-/** Nombre, celular y correo de un funcionario (todos opcionales). */
-const contacto = (prefix: string, cargo: string, section: string): Field[] => [
-	{ id: `${prefix}_nombre`, label: cargo, type: 'text', optional: true, section },
-	{
-		id: `${prefix}_celular`,
-		label: `Celular ${cargo.charAt(0).toLowerCase()}${cargo.slice(1)}`,
-		type: 'text',
-		optional: true,
-		format: 'celular',
-		inputMode: 'tel',
-		maxLength: 15,
-		placeholder: '987654321',
-		section,
-	},
-	{
-		id: `${prefix}_correo`,
-		label: `Correo ${cargo.charAt(0).toLowerCase()}${cargo.slice(1)}`,
-		type: 'text',
-		optional: true,
-		format: 'email',
-		inputMode: 'email',
-		placeholder: 'nombre@correo.com',
-		section,
-	},
-]
+/** Nombre, celular y correo de un funcionario (todos opcionales, sin límites de caracteres). */
+const contacto = (
+	prefix: string,
+	cargo: string,
+	section: string,
+	nombre: Partial<Field> = {},
+): Field[] => {
+	const enMinuscula = `${cargo.charAt(0).toLowerCase()}${cargo.slice(1)}`
+	return [
+		{
+			id: `${prefix}_nombre`,
+			label: cargo,
+			type: 'text',
+			optional: true,
+			format: 'letras',
+			section,
+			...nombre,
+		},
+		{
+			id: `${prefix}_celular`,
+			label: `Celular ${enMinuscula}`,
+			type: 'text',
+			optional: true,
+			format: 'telefono',
+			inputMode: 'tel',
+			placeholder: '987654321',
+			section,
+		},
+		{
+			id: `${prefix}_correo`,
+			label: `Correo ${enMinuscula}`,
+			type: 'text',
+			optional: true,
+			format: 'email',
+			inputMode: 'email',
+			placeholder: 'nombre@correo.com',
+			section,
+		},
+	]
+}
 
 /** Total de PCs y laptops declarados en Oficinas y Asistencial. */
 const totalEquipos = (all: Answers) =>
@@ -62,21 +77,27 @@ export const ACTUAL_BLOCKS: Block[] = [
 		subtitle: 'Actualiza los datos de contacto del establecimiento. Todos los campos son opcionales.',
 		fields: [
 			siNo('ris', 'RIS', { optional: true, section: 'Establecimiento' }),
+			siNo('cap_aus', 'CAP AUS', { optional: true, section: 'Establecimiento' }),
 			{
 				id: 'telefonos',
-				label: 'Teléfonos',
+				label: 'Teléfonos del establecimiento',
 				type: 'text',
 				optional: true,
+				format: 'telefono',
 				inputMode: 'tel',
-				placeholder: '084 123456',
+				// placeholder: '084 123456',
 				hint: 'Si hay más de uno, sepáralos con coma.',
 				section: 'Establecimiento',
 			},
-			...contacto('director', 'Funcionario (Director) de EESS', 'Director del establecimiento'),
+			// El nombre del director se completa con el jefe que ingresó, pero se puede cambiar
+			...contacto('director', 'Jefe del EESS', 'Director del establecimiento', {
+				prefill: (session) => session.encargado,
+				hint: 'Se completó con el nombre del jefe del establecimiento. Puedes modificarlo.',
+			}),
 			...contacto(
-				'ti',
-				'Funcionario responsable de informática o TI',
-				'Responsable de informática o TI',
+				'estadistica',
+				'Responsable de estadística',
+				'Responsable de estadística',
 			),
 		],
 	},

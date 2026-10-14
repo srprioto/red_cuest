@@ -5,6 +5,8 @@ import { itemKey } from './utils'
 const OCTET = '(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)'
 const IPV4 = new RegExp(`^${OCTET}(\\.${OCTET}){3}$`)
 
+const PHONE = /^[\d\s+()\-.,/]+$/
+const LETTERS = /^[\p{L}\s.'’-]+$/u
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 const isValidIPv4 = (s: string) => IPV4.test(s.trim())
@@ -17,6 +19,9 @@ function isValidMask(raw: string): boolean {
 	const inv = ~n >>> 0
 	return (inv & (inv + 1)) === 0 // 1s contiguos seguidos de 0s
 }
+
+/** Solo letras (con espacios, punto, apóstrofe y guion): nombres de personas. */
+export const isOnlyLetters = (s: string) => LETTERS.test(s.trim()) && /\p{L}/u.test(s)
 
 const isEmpty = (v: Scalar | undefined) =>
 	v === null || v === undefined || (typeof v === 'string' && v.trim() === '')
@@ -59,9 +64,10 @@ function validateField(f: Field, value: Scalar | undefined, values: Item): strin
 				: 'Ingresa una máscara válida. Ejemplo: 255.255.255.0 o /24'
 		default: {
 			const text = String(value).trim()
-			if (f.format === 'celular' && !/^9\d{8}$/.test(text.replace(/[\s-]/g, ''))) {
-				return 'Ingresa un celular de 9 dígitos que empiece con 9.'
+			if (f.format === 'telefono' && !(PHONE.test(text) && /\d/.test(text))) {
+				return 'Escribe solo números (puedes usar espacios, guiones o comas).'
 			}
+			if (f.format === 'letras' && !isOnlyLetters(text)) return 'Escribe solo letras.'
 			if (f.format === 'email' && !EMAIL.test(text)) return 'Ingresa un correo válido.'
 			return null
 		}

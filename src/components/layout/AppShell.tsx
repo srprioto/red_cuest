@@ -28,7 +28,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
 	const onLogout = () => {
 		logout()
-		navigate('/')
+		navigate('/ingreso')
 	}
 
 	return (
@@ -43,7 +43,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 					<div className="topbar__session">
 						<span className="topbar__code">
 								IPRESS {session.ipress}
-								{session.establecimiento ? ` · ${session.establecimiento}` : ''}
+								{session.establecimiento ? ` · ${session.establecimiento.nombre}` : ''}
 							</span>
 						<button type="button" className="icon-btn" onClick={onLogout}>
 							<LogOut size={16} />

@@ -1,0 +1,4 @@
+# Datos sensibles: no subir a git
+users.json
+.secret
+encuestas/*.json

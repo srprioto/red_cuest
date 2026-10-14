@@ -19,7 +19,7 @@ export default function SummaryPage() {
 			<header className="block__header">
 				<p className="block__eyebrow">
 					IPRESS {session.ipress}
-					{session.establecimiento ? ` · ${session.establecimiento}` : ''} · {session.encargado}
+					{session.establecimiento ? ` · ${session.establecimiento.nombre}` : ''} · {session.encargado}
 				</p>
 				<h1>Encuesta completada</h1>
 				<p>Gracias por tu tiempo. Estas son tus respuestas y los totales calculados a partir de ellas.</p>
